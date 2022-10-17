@@ -1,0 +1,24 @@
+[1;31m
+Start test 1[0m
+Enter rectangle width:
+> 20
+Enter rectangle height:
+> 10
+Enter output image name:
+> test/out1.png
+[1;31m
+Start test 2[0m
+Enter rectangle width:
+> 10
+Enter rectangle height:
+> 10
+Enter output image name:
+> test/out2.png
+[1;31m
+Start test 3[0m
+Enter rectangle width:
+> 20
+Enter rectangle height:
+> 20
+Enter output image name:
+> test/out3.png

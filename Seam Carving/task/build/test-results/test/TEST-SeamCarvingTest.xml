@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="SeamCarvingTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2022-10-17T17:46:45" hostname="sbpltkywwqqj7" time="0.384">
+  <properties/>
+  <testcase name="start" classname="SeamCarvingTest" time="0.384"/>
+  <system-out><![CDATA[?[1;31m
+Start test 1?[0m
+Enter rectangle width:
+> 20
+Enter rectangle height:
+> 10
+Enter output image name:
+> test/out1.png
+?[1;31m
+Start test 2?[0m
+Enter rectangle width:
+> 10
+Enter rectangle height:
+> 10
+Enter output image name:
+> test/out2.png
+?[1;31m
+Start test 3?[0m
+Enter rectangle width:
+> 20
+Enter rectangle height:
+> 20
+Enter output image name:
+> test/out3.png
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
