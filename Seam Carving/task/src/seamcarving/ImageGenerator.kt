@@ -13,4 +13,18 @@ class ImageGenerator {
         lines.drawLine(0 , height - 1, width - 1, 0)
         return image
     }
+
+    fun createImageNegative(image: BufferedImage): BufferedImage {
+
+        for (x in 0 until image.width) {
+            for (y in 0 until image.height) {
+                val color = Color(image.getRGB(x, y))
+                val negative = Color(255 - color.red, 255 - color.green, 255 - color.blue)
+                image.setRGB(x, y, negative.rgb)
+            }
+        }
+
+        return image
+
+    }
 }
