@@ -6,11 +6,11 @@
 fun main(args: Array<String>) {
     val imageGenerator = ImageGenerator()
 
-    val imageFile = File(args[1])
-    val image = ImageIO.read(imageFile)
-    val negativeImage = imageGenerator.createImageNegative(image)
-    val negativeImageFile = File(args[3])
-    ImageIO.write(negativeImage, "png", negativeImageFile)
+    val inputImageFile = File(args[1])
+    val image = ImageIO.read(inputImageFile)
+    val outputImage = imageGenerator.calculateImageEnergy(image)
+    val outputImageFile = File(args[3])
+    ImageIO.write(outputImage, "png", outputImageFile)
 
 }
             
