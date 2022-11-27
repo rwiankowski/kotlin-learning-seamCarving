@@ -3,7 +3,7 @@ hyperskill_project:
   ide_files: https://stepik.org/media/attachments/lesson/312105/additional_files.json
   is_template_based: false
   use_ide: true
-update_date: Sat, 22 Oct 2022 21:04:19 UTC
+update_date: "Sun, 27 Nov 2022 07:12:32 UTC"
 stages:
 - id: 550
   step: 9015
@@ -13,10 +13,10 @@ stages:
   is_completed: true
 - id: 552
   step: 9017
-  is_completed: false
+  is_completed: true
 - id: 553
   step: 9018
-  is_completed: false
+  is_completed: true
 - id: 554
   step: 9019
   is_completed: false
@@ -39,7 +39,7 @@ topics:
     theory_id: 9704
   - title: Files
     theory_id: 13025
-  - title: Vectors, matrices, scalars
+  - title: "Vectors, matrices, scalars"
     theory_id: 16969
   - title: Introduction to matrices
     theory_id: 7112
@@ -97,6 +97,8 @@ topics:
     theory_id: 4580
   - title: If expression
     theory_id: 4625
+  - title: Errors in programs
+    theory_id: 11559
   - title: Repeating blocks
     theory_id: 4643
   - title: Objects
@@ -145,8 +147,6 @@ topics:
     theory_id: 14484
   - title: Image libraries
     theory_id: 16348
-  - title: Errors in programs
-    theory_id: 11559
   - title: What is an exception
     theory_id: 7243
   1:
@@ -204,7 +204,7 @@ topics:
     theory_id: 16547
   - title: The big O notation
     theory_id: 16699
-  - title: Best, average and worst cases
+  - title: "Best, average and worst cases"
     theory_id: 20084
   - title: Data structures
     theory_id: 16927
@@ -228,7 +228,7 @@ topics:
     theory_id: 7948
   - title: Graph
     theory_id: 15967
-  - title: Nodes, cycles and paths
+  - title: "Nodes, cycles and paths"
     theory_id: 15968
   - title: Representation of graphs
     theory_id: 15969

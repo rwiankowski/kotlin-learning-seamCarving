@@ -270,6 +270,38 @@ files:
 - name: test/trees.png
   visible: false
   learner_created: false
+- name: src/seamcarving/ImageGenerator.kt
+  visible: true
+  text: |
+    package seamcarving
+
+    import java.awt.Color
+    import java.awt.image.BufferedImage
+
+    class ImageGenerator {
+
+        fun generateImageWithTwoRedLines(width: Int, height: Int) : BufferedImage {
+            val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
+            val lines = image.createGraphics()
+            lines.color = Color.RED
+            lines.drawLine(0 , 0, width - 1, height - 1)
+            lines.drawLine(0 , height - 1, width - 1, 0)
+            return image
+        }
+    }
+  learner_created: true
+- name: test/small-seam.png
+  visible: true
+  learner_created: true
+- name: test/blue-seam.png
+  visible: true
+  learner_created: true
+- name: test/trees-seam.png
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/9018#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Sun, 27 Nov 2022 20:12:28 UTC"
 record: -1
