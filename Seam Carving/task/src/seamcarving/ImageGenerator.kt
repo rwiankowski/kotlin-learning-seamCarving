@@ -43,45 +43,55 @@ class ImageGenerator {
         return image
     }
 
-    /* fun findSeamWithLowestEnergy(image: BufferedImage): BufferedImage {
+    fun findHorizontalSeamWithLowestEnergy(image: BufferedImage): BufferedImage {
 
         val energies = calculateImageEnergy(image)
-        val pixelPaths = mutableListOf<MutableList<Int>>()
-        val seamEnergies = mutableListOf<Double>()
 
+        val seamEnergies = mutableListOf<MutableList<Double>>()
+        val seamPath = mutableListOf<MutableList<Int>>()
+
+        seamEnergies.add(mutableListOf())
+        seamPath.add(mutableListOf())
         for (y in 0 until image.height) {
-                for (x in 0 until image.width) print("${energies[x][y]} ")
-               print("\n")
+            seamEnergies[0].add(energies[0][y])
+            seamPath[0].add(y)
         }
 
-        for (x in 0 until image.width) {
-            pixelPaths.add(mutableListOf())
-            pixelPaths[x].add(x)
-            seamEnergies.add(energies[x][0])
-            for (y in 1 until image.height) {
-                val start = pixelPaths[x].last()
-                pixelPaths[x].add((start - 1).coerceAtLeast(0))
-                for (index in start  .. (start + 1).coerceAtMost(image.width - 1)) {
-                    if (energies[index][y] < energies[pixelPaths[x][y]][y]) pixelPaths[x][y] = index
+        for (x in 1 until image.width) {
+            seamEnergies.add(mutableListOf())
+            seamPath.add(mutableListOf())
+
+            for (y in 0 until image.height) {
+
+                val start = (y - 1).coerceAtLeast(0)
+                val end = (y + 1).coerceAtMost(image.height - 1)
+                var lowestEnergyValue = seamEnergies[x - 1][start]
+                var lowestEnergyIndex = start
+                for (index in start .. end) {
+                    if (seamEnergies[x - 1][index] < lowestEnergyValue) {
+                        lowestEnergyValue = seamEnergies[x - 1][index]
+                        lowestEnergyIndex = index
+                    }
                 }
-                seamEnergies[x] += energies[pixelPaths[x][y]][y]
+                seamEnergies[x].add(energies[x][y] + lowestEnergyValue)
+                seamPath[x].add(lowestEnergyIndex)
             }
         }
 
-        val lowestEnergy = seamEnergies.minOf { it }
-        val pathToFollow = seamEnergies.indexOf(lowestEnergy)
+        val smallestEnergySeam = seamEnergies.last().minOf { it }
+        val smallestEnergyIndex = seamEnergies.last().indexOf(smallestEnergySeam)
 
+        var nextIndexInSeam = smallestEnergyIndex
 
-        for (y in 0 until image.height) {
-            image.setRGB(pixelPaths[pathToFollow][y], y, Color(255, 0, 0).rgb
-            )
+        for (x in image.width - 1 downTo 0) {
+            image.setRGB(x, nextIndexInSeam, Color.RED.rgb)
+            if (x != 0 ) nextIndexInSeam = seamPath[x][nextIndexInSeam]
         }
 
         return image
     }
-    */
 
-    fun findSeamWithLowestEnergy(image: BufferedImage): BufferedImage {
+    fun findVerticalSeamWithLowestEnergy(image: BufferedImage): BufferedImage {
 
         val energies = calculateImageEnergy(image)
 
@@ -122,7 +132,6 @@ class ImageGenerator {
         var nextIndexInSeam = smallestEnergyIndex
 
         for (y in image.height - 1 downTo 0 ) {
-
             image.setRGB(nextIndexInSeam, y, Color.RED.rgb)
             if (y != 0) nextIndexInSeam = seamPath[y][nextIndexInSeam]
         }
@@ -182,6 +191,22 @@ class ImageGenerator {
         }
 
         return energies
+    }
+
+    private fun transposeImageEnergies(energies: MutableList<MutableList<Double>>): MutableList<MutableList<Double>> {
+
+        val transposedEnergies = mutableListOf<MutableList<Double>>()
+
+        val energiesWidth = energies.size
+        val energiesHeight = energies[0].size
+
+        for (y in 0 until energiesHeight) {
+            transposedEnergies.add(mutableListOf())
+            for (x in 0 until energiesWidth) {
+                transposedEnergies[y].add(energies[x][y])
+            }
+        }
+        return transposedEnergies
     }
 }
 
