@@ -263,6 +263,39 @@ files:
 - name: test/blue-pass.png
   visible: false
   learner_created: false
+- name: src/seamcarving/ImageGenerator.kt
+  visible: true
+  text: |
+    package seamcarving
+
+    import java.awt.Color
+    import java.awt.image.BufferedImage
+
+    class ImageGenerator {
+
+        fun generateImageWithTwoRedLines(width: Int, height: Int) : BufferedImage {
+            val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
+            val lines = image.createGraphics()
+            lines.color = Color.RED
+            lines.drawLine(0 , 0, width - 1, height - 1)
+            lines.drawLine(0 , height - 1, width - 1, 0)
+            return image
+        }
+    }
+  learner_created: true
+- name: test/blue-reduced.png
+  visible: true
+  learner_created: true
+- name: test/small-reduced.png
+  visible: true
+  learner_created: true
+- name: test/trees-reduced.png
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/learn/step/9020#comment
-status: Unchecked
-record: -1
+status: Solved
+feedback:
+  message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">JetBrains
+    Academy</a> to continue learning.
+  time: "Thu, 01 Dec 2022 18:53:08 UTC"
+record: 12

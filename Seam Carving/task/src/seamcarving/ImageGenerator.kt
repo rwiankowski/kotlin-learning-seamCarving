@@ -6,137 +6,121 @@ import kotlin.math.*
 
 class ImageGenerator {
 
-    fun generateImageWithTwoRedLines(width: Int, height: Int) : BufferedImage {
-        val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
-        val lines = image.createGraphics()
-        lines.color = Color.RED
-        lines.drawLine(0 , 0, width - 1, height - 1)
-        lines.drawLine(0 , height - 1, width - 1, 0)
-        return image
-    }
+    fun removeHorizontalSeams(image: BufferedImage, heightToResize: Int): BufferedImage {
 
-    fun createImageNegative(image: BufferedImage): BufferedImage {
+        var newImage = image
 
-        for (x in 0 until image.width) {
-            for (y in 0 until image.height) {
-                val color = Color(image.getRGB(x, y))
-                val negative = Color(255 - color.red, 255 - color.green, 255 - color.blue)
-                image.setRGB(x, y, negative.rgb)
+        repeat(heightToResize) {
+            val energies = calculateImageEnergy(newImage)
+            val seamEnergies = mutableListOf<MutableList<Double>>()
+            val seamPath = mutableListOf<MutableList<Int>>()
+            val resizedImage = BufferedImage(newImage.width, newImage.height  - 1, BufferedImage.TYPE_INT_RGB)
+
+            seamEnergies.add(mutableListOf())
+            seamPath.add(mutableListOf())
+            for (y in 0 until newImage.height) {
+                seamEnergies[0].add(energies[0][y])
+                seamPath[0].add(y)
             }
-        }
 
-        return image
+            for (x in 1 until newImage.width) {
+                seamEnergies.add(mutableListOf())
+                seamPath.add(mutableListOf())
 
-    }
+                for (y in 0 until newImage.height) {
 
-    fun createEnergyImage(image: BufferedImage): BufferedImage {
-
-        val energies = calculateImageEnergy(image)
-
-        for (x in 0 until image.width) {
-            for (y in 0 until image.height) {
-                val intensity = energies[x][y].toInt()
-                image.setRGB(x, y, Color(intensity, intensity, intensity).rgb)
+                    val start = (y - 1).coerceAtLeast(0)
+                    val end = (y + 1).coerceAtMost(newImage.height - 1)
+                    var lowestEnergyValue = seamEnergies[x - 1][start]
+                    var lowestEnergyIndex = start
+                    for (index in start .. end) {
+                        if (seamEnergies[x - 1][index] < lowestEnergyValue) {
+                            lowestEnergyValue = seamEnergies[x - 1][index]
+                            lowestEnergyIndex = index
+                        }
+                    }
+                    seamEnergies[x].add(energies[x][y] + lowestEnergyValue)
+                    seamPath[x].add(lowestEnergyIndex)
+                }
             }
-        }
 
-        return image
+            val smallestEnergySeam = seamEnergies.last().minOf { it }
+            val smallestEnergyIndex = seamEnergies.last().indexOf(smallestEnergySeam)
+
+            var nextIndexInSeam = smallestEnergyIndex
+            var modifier = 1
+
+            for (x in resizedImage.width - 1 downTo 0) {
+                for (y in resizedImage.height - 1 downTo 0) {
+                    if (y + modifier == nextIndexInSeam) modifier = 0
+                    resizedImage.setRGB(x, y, newImage.getRGB(x, y + modifier))
+                }
+                modifier = 1
+                if (x != 0 ) nextIndexInSeam = seamPath[x][nextIndexInSeam]
+            }
+            newImage = resizedImage
+        }
+        return newImage
     }
 
-    fun findHorizontalSeamWithLowestEnergy(image: BufferedImage): BufferedImage {
+    fun removeVerticalSeams(image: BufferedImage, widthToResize: Int): BufferedImage {
 
-        val energies = calculateImageEnergy(image)
+        var newImage = image
 
-        val seamEnergies = mutableListOf<MutableList<Double>>()
-        val seamPath = mutableListOf<MutableList<Int>>()
+        repeat(widthToResize) {
 
-        seamEnergies.add(mutableListOf())
-        seamPath.add(mutableListOf())
-        for (y in 0 until image.height) {
-            seamEnergies[0].add(energies[0][y])
-            seamPath[0].add(y)
-        }
+            val energies = calculateImageEnergy(newImage)
+            val seamEnergies = mutableListOf<MutableList<Double>>()
+            val seamPath = mutableListOf<MutableList<Int>>()
 
-        for (x in 1 until image.width) {
             seamEnergies.add(mutableListOf())
             seamPath.add(mutableListOf())
 
-            for (y in 0 until image.height) {
-
-                val start = (y - 1).coerceAtLeast(0)
-                val end = (y + 1).coerceAtMost(image.height - 1)
-                var lowestEnergyValue = seamEnergies[x - 1][start]
-                var lowestEnergyIndex = start
-                for (index in start .. end) {
-                    if (seamEnergies[x - 1][index] < lowestEnergyValue) {
-                        lowestEnergyValue = seamEnergies[x - 1][index]
-                        lowestEnergyIndex = index
-                    }
-                }
-                seamEnergies[x].add(energies[x][y] + lowestEnergyValue)
-                seamPath[x].add(lowestEnergyIndex)
+            for (x in 0 until newImage.width) {
+                seamEnergies[0].add(energies[x][0])
+                seamPath[0].add(x)
             }
-        }
 
-        val smallestEnergySeam = seamEnergies.last().minOf { it }
-        val smallestEnergyIndex = seamEnergies.last().indexOf(smallestEnergySeam)
+            for (y in 1 until newImage.height) {
+                seamEnergies.add(mutableListOf())
+                seamPath.add(mutableListOf())
 
-        var nextIndexInSeam = smallestEnergyIndex
+                for (x in 0 until newImage.width) {
 
-        for (x in image.width - 1 downTo 0) {
-            image.setRGB(x, nextIndexInSeam, Color.RED.rgb)
-            if (x != 0 ) nextIndexInSeam = seamPath[x][nextIndexInSeam]
-        }
-
-        return image
-    }
-
-    fun findVerticalSeamWithLowestEnergy(image: BufferedImage): BufferedImage {
-
-        val energies = calculateImageEnergy(image)
-
-        val seamEnergies = mutableListOf<MutableList<Double>>()
-        val seamPath = mutableListOf<MutableList<Int>>()
-
-        seamEnergies.add(mutableListOf())
-        seamPath.add(mutableListOf())
-        for (x in 0 until image.width) {
-            seamEnergies[0].add(energies[x][0])
-            seamPath[0].add(x)
-        }
-
-        for (y in 1 until image.height) {
-            seamEnergies.add(mutableListOf())
-            seamPath.add(mutableListOf())
-
-            for (x in 0 until image.width) {
-
-                val start = (x - 1).coerceAtLeast(0)
-                val end = (x + 1).coerceAtMost(image.width - 1)
-                var lowestEnergyValue = seamEnergies[y - 1][start]
-                var lowestEnergyIndex = start
-                for (index in start .. end) {
-                    if (seamEnergies[y - 1][index] < lowestEnergyValue) {
-                        lowestEnergyValue = seamEnergies[y - 1][index]
-                        lowestEnergyIndex = index
+                    val start = (x - 1).coerceAtLeast(0)
+                    val end = (x + 1).coerceAtMost(newImage.width - 1)
+                    var lowestEnergyValue = seamEnergies[y - 1][start]
+                    var lowestEnergyIndex = start
+                    for (index in start .. end) {
+                        if (seamEnergies[y - 1][index] < lowestEnergyValue) {
+                            lowestEnergyValue = seamEnergies[y - 1][index]
+                            lowestEnergyIndex = index
+                        }
                     }
+                    seamEnergies[y].add(energies[x][y] + lowestEnergyValue)
+                    seamPath[y].add(lowestEnergyIndex)
                 }
-                seamEnergies[y].add(energies[x][y] + lowestEnergyValue)
-                seamPath[y].add(lowestEnergyIndex)
             }
+
+            val smallestEnergySeam = seamEnergies.last().minOf { it }
+            val smallestEnergyIndex = seamEnergies.last().indexOf(smallestEnergySeam)
+            var nextIndexInSeam = smallestEnergyIndex
+
+            val resizedImage = BufferedImage(newImage.width - 1, newImage.height, BufferedImage.TYPE_INT_RGB)
+            var modifier = 1
+
+            for (y in resizedImage.height - 1 downTo 0 ) {
+                for (x in resizedImage.width - 1 downTo 0) {
+                    if ( x + modifier == nextIndexInSeam ) modifier = 0
+                    resizedImage.setRGB(x, y, newImage.getRGB(x + modifier, y))
+                }
+                modifier = 1
+                if (y != 0) nextIndexInSeam = seamPath[y][nextIndexInSeam]
+            }
+            newImage = resizedImage
         }
 
-        val smallestEnergySeam = seamEnergies.last().minOf { it }
-        val smallestEnergyIndex = seamEnergies.last().indexOf(smallestEnergySeam)
-
-        var nextIndexInSeam = smallestEnergyIndex
-
-        for (y in image.height - 1 downTo 0 ) {
-            image.setRGB(nextIndexInSeam, y, Color.RED.rgb)
-            if (y != 0) nextIndexInSeam = seamPath[y][nextIndexInSeam]
-        }
-
-        return image
+        return newImage
     }
 
     private fun calculateImageEnergy(image: BufferedImage): MutableList<MutableList<Double>> {
@@ -193,21 +177,6 @@ class ImageGenerator {
         return energies
     }
 
-    private fun transposeImageEnergies(energies: MutableList<MutableList<Double>>): MutableList<MutableList<Double>> {
-
-        val transposedEnergies = mutableListOf<MutableList<Double>>()
-
-        val energiesWidth = energies.size
-        val energiesHeight = energies[0].size
-
-        for (y in 0 until energiesHeight) {
-            transposedEnergies.add(mutableListOf())
-            for (x in 0 until energiesWidth) {
-                transposedEnergies[y].add(energies[x][y])
-            }
-        }
-        return transposedEnergies
-    }
 }
 
 
